@@ -1,62 +1,59 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Iterator;
+import java.io.*;
+import java.util.*;
+import java.lang.*;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.sl.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+
 public class Test {
-	public static void main(String[] args) {
-try {
+	public static void main(String[] args) throws IOException {
+		String excelFilePath = "C:/tmp/Books.xlsx";
+        FileInputStream inputStream = new FileInputStream(new File(excelFilePath));
+         
+        Workbook workbook = new XSSFWorkbook(inputStream);
+        XSSFSheet firstSheet = (XSSFSheet) workbook.getSheetAt(0);
+        Iterator<Row> iterator = firstSheet.iterator();
+         
+        while (iterator.hasNext()) {
+            Row nextRow = iterator.next();
+            Iterator<Cell> cellIterator = nextRow.cellIterator();
+             
+            while (cellIterator.hasNext()) {
+                Cell cell = cellIterator.next();
+                 
+                switch (cell.getCellType()) {
+                    case Cell.CELL_TYPE_STRING:
+                        System.out.print(cell.getStringCellValue());
+                        break;
+                    case Cell.CELL_TYPE_BOOLEAN:
+                        System.out.print(cell.getBooleanCellValue());
+                        break;
+                    case Cell.CELL_TYPE_NUMERIC:
+                        System.out.print(cell.getNumericCellValue());
+                        break;
+                }
+                System.out.print(" - ");
+            }
+            System.out.println();
+        }
+         
+        workbook.close();
+        inputStream.close();
+    }
 			
-			FileInputStream file = new FileInputStream(new File("C:\\test.xls"));
+	 
 			
-			//Get the workbook instance for XLS file 
-			HSSFWorkbook workbook = new HSSFWorkbook(file);
-
-			//Get first sheet from the workbook
-			HSSFSheet sheet = workbook.getSheetAt(0);
 			
-			//Iterate through each rows from first sheet
-			Iterator<Row> rowIterator = sheet.iterator();
-			while(rowIterator.hasNext()) {
-				Row row = rowIterator.next();
-				
-				//For each row, iterate through each columns
-				Iterator<Cell> cellIterator = row.cellIterator();
-				while(cellIterator.hasNext()) {
-					
-					Cell cell = cellIterator.next();
-					
-					switch(cell.getCellType()) {
-						case Cell.CELL_TYPE_BOOLEAN:
-							System.out.print(cell.getBooleanCellValue() + "\t\t");
-							break;
-						case Cell.CELL_TYPE_NUMERIC:
-							System.out.print(cell.getNumericCellValue() + "\t\t");
-							break;
-						case Cell.CELL_TYPE_STRING:
-							System.out.print(cell.getStringCellValue() + "\t\t");
-							break;
-					}
-				}
-				System.out.println("");
-			}
-			file.close();
-			FileOutputStream out = 
-				new FileOutputStream(new File("C:\\test.xls"));
-			workbook.write(out);
-			out.close();
 			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 }
+
+			
+
+
+
